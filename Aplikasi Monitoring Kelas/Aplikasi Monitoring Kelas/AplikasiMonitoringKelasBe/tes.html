@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Web Application Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #232f3e;
+        }
+
+        .header h1 {
+            color: #232f3e;
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .architecture-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            position: relative;
+        }
+
+        /* Left Side - Client and Services */
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .client-box {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .client-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .client-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #232f3e;
+        }
+
+        .service-item {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .service-number {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 28px;
+            height: 28px;
+            background: #0073bb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .service-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #232f3e;
+            line-height: 1.3;
+        }
+
+        /* Main VPC Area */
+        .vpc-container {
+            border: 3px solid #5cb85c;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f0fff0;
+            position: relative;
+        }
+
+        .vpc-label {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: white;
+            padding: 2px 10px;
+            font-weight: bold;
+            color: #5cb85c;
+            font-size: 13px;
+        }
+
+        .vpc-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        /* Availability Zones */
+        .availability-zone {
+            border: 2px dashed #aaa;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+            position: relative;
+        }
+
+        .az-label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: white;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* Subnets */
+        .subnet {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .subnet-label {
+            position: absolute;
+            top: -8px;
+            left: 8px;
+            background: white;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #0073bb;
+        }
+
+        .public-subnet {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .web-subnet {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        .app-subnet {
+            background: #fce4ec;
+            border-color: #e91e63;
+        }
+
+        .db-subnet {
+            background: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        /* Components inside subnets */
+        .component {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .component:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .component-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .nat-gateway { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+        .alb { background: linear-gradient(135deg, #2196f3, #0d47a1); }
+        .ec2 { background: linear-gradient(135deg, #ff9800, #e65100); }
+        .rds { background: linear-gradient(135deg, #3f51b5, #1a237e); }
+        .efs { background: linear-gradient(135deg, #009688, #004d40); }
+        .elasticache { background: linear-gradient(135deg, #e91e63, #880e4f); }
+
+        .component-name {
+            font-size: 10px;
+            font-weight: bold;
+            color: #232f3e;
+            line-height: 1.2;
+        }
+
+        .component-detail {
+            font-size: 9px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        /* Auto Scaling Group Indicator */
+        .asg-group {
+            position: relative;
+            border: 2px dashed #ff9800;
+            border-radius: 6px;
+            padding: 8px;
+            background: rgba(255, 152, 0, 0.05);
+        }
+
+        .asg-label {
+            position: absolute;
+            top: -8px;
+            left: 8px;
+            background: white;
+            padding: 1px 6px;
+            font-size: 9px;
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        /* External Services */
+        .external-services {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .external-service {
+            width: 180px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Security Section */
+        .security-section {
+            margin-top: 30px;
+            background: #fff8e1;
+            border: 3px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .security-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #232f3e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .security-item {
+            background: white;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .security-item h4 {
+            color: #232f3e;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-item ul {
+            margin-left: 20px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Data Flow Section */
+        .flow-section {
+            margin-top: 30px;
+            background: #e3f2fd;
+            border: 3px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .flow-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #232f3e;
+            margin-bottom: 15px;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .flow-step-number {
+            width: 30px;
+            height: 30px;
+            background: #2196f3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: bold;
+        }
+
+        .flow-step-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #232f3e;
+        }
+
+        .flow-explanation {
+            font-size: 10px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: #2196f3;
+        }
+
+        @media (max-width: 1200px) {
+            .architecture-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .vpc-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Web Application Architecture on AWS</h1>
+            <p>This architecture shows how you can host a classic web application on AWS</p>
+        </div>
+
+        <div class="architecture-layout">
+            <!-- Left Side -->
+            <div class="left-side">
+                <!-- Web Client -->
+                <div class="client-box">
+                    <div class="client-icon">🖥️</div>
+                    <div class="client-label">Web<br>Client</div>
+                </div>
+
+                <!-- 1. Route 53 -->
+                <div class="service-item">
+                    <div class="service-number">1</div>
+                    <div class="service-icon">🌐</div>
+                    <div class="service-name">Amazon Route 53<br>DNS service</div>
+                </div>
+
+                <!-- 2. WAF -->
+                <div class="service-item">
+                    <div class="service-number">2</div>
+                    <div class="service-icon" style="background: linear-gradient(135deg, #e91e63, #c2185b);">🛡️</div>
+                    <div class="service-name">AWS WAF</div>
+                </div>
+
+                <!-- 3. CloudFront -->
+                <div class="service-item">
+                    <div class="service-number">3</div>
+                    <div class="service-icon" style="background: linear-gradient(135deg, #9c27b0, #6a1b9a);">☁️</div>
+                    <div class="service-name">Amazon CloudFront<br><small>content delivery network</small></div>
+                </div>
+
+                <!-- 4. S3 -->
+                <div class="service-item">
+                    <div class="service-number">4</div>
+                    <div class="service-icon" style="background: linear-gradient(135deg, #4caf50, #2e7d32);">📦</div>
+                    <div class="service-name">Amazon S3<br><small>static storage and backup</small></div>
+                </div>
+
+                <!-- 5. Certificate Manager -->
+                <div class="service-item">
+                    <div class="service-number">5</div>
+                    <div class="service-icon" style="background: linear-gradient(135deg, #f44336, #c62828);">🔒</div>
+                    <div class="service-name">AWS Certificate Manager (ACM)</div>
+                </div>
+            </div>
+
+            <!-- VPC Container -->
+            <div class="vpc-container">
+                <div class="vpc-label">🏢 VPC (Virtual Private Cloud)</div>
+
+                <div class="vpc-content">
+                    <!-- Availability Zone 1 -->
+                    <div class="availability-zone">
+                        <div class="az-label">Availability Zone 1</div>
+
+                        <!-- Public Subnet -->
+                        <div class="subnet public-subnet">
+                            <div class="subnet-label">📍 Public subnet</div>
+
+                            <div class="component">
+                                <div class="component-icon nat-gateway">🔄</div>
+                                <div class="component-name">NAT gateway</div>
+                            </div>
+
+                            <div class="component">
+                                <div class="component-icon alb">⚖️</div>
+                                <div class="component-name">Internet-facing Load Balancer</div>
+                            </div>
+                        </div>
+
+                        <!-- Web Subnet -->
+                        <div class="subnet web-subnet">
+                            <div class="subnet-label">🌐 Web subnet</div>
+
+                            <div class="asg-group">
+                                <div class="asg-label">Auto Scaling group</div>
+                                <div class="component">
+                                    <div class="component-icon ec2">🖥️</div>
+                                    <div class="component-name">EC2 Instances</div>
+                                    <div class="component-detail">web servers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- App Subnet -->
+                        <div class="subnet app-subnet">
+                            <div class="subnet-label">⚙️ Application subnet</div>
+
+                            <div class="component">
+                                <div class="component-icon alb">⚖️</div>
+                                <div class="component-name">Internal Load Balancer</div>
+                            </div>
+
+                            <div class="asg-group">
+                                <div class="asg-label">Auto Scaling group</div>
+                                <div class="component">
+                                    <div class="component-icon ec2">💻</div>
+                                    <div class="component-name">EC2 Instances</div>
+                                    <div class="component-detail">application servers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Database Subnet -->
+                        <div class="subnet db-subnet">
+                            <div class="subnet-label">🗄️ Database subnet</div>
+
+                            <div class="component">
+                                <div class="component-icon rds">🗃️</div>
+                                <div class="component-name">Amazon RDS</div>
+                                <div class="component-detail">standby database</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Availability Zone 2 -->
+                    <div class="availability-zone">
+                        <div class="az-label">Availability Zone 2</div>
+
+                        <!-- Public Subnet -->
+                        <div class="subnet public-subnet">
+                            <div class="subnet-label">📍 Public subnet</div>
+
+                            <div class="component">
+                                <div class="component-icon nat-gateway">🔄</div>
+                                <div class="component-name">NAT gateway</div>
+                            </div>
+                        </div>
+
+                        <!-- Web Subnet -->
+                        <div class="subnet web-subnet">
+                            <div class="subnet-label">🌐 Web subnet</div>
+
+                            <div class="asg-group">
+                                <div class="asg-label">Auto Scaling group</div>
+                                <div class="component">
+                                    <div class="component-icon ec2">🖥️</div>
+                                    <div class="component-name">EC2 Instances</div>
+                                    <div class="component-detail">web servers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- App Subnet -->
+                        <div class="subnet app-subnet">
+                            <div class="subnet-label">⚙️ Application subnet</div>
+
+                            <div class="asg-group">
+                                <div class="asg-label">Auto Scaling group</div>
+                                <div class="component">
+                                    <div class="component-icon ec2">💻</div>
+                                    <div class="component-name">EC2 Instances</div>
+                                    <div class="component-detail">application servers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Database Subnet -->
+                        <div class="subnet db-subnet">
+                            <div class="subnet-label">🗄️ Database subnet</div>
+
+                            <div class="component">
+                                <div class="component-icon rds">🗃️</div>
+                                <div class="component-name">Amazon RDS</div>
+                                <div class="component-detail">primary database</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- External Services Column -->
+                    <div>
+                        <!-- EFS -->
+                        <div class="external-service" style="margin-bottom: 15px;">
+                            <div class="service-number">11</div>
+                            <div class="service-icon efs">📁</div>
+                            <div class="service-name">Amazon EFS</div>
+                            <div class="component-detail">shared storage</div>
+                        </div>
+
+                        <!-- ElastiCache -->
+                        <div class="external-service">
+                            <div class="service-number">10</div>
+                            <div class="service-icon elasticache">⚡</div>
+                            <div class="service-name">Amazon ElastiCache</div>
+                            <div class="component-detail">caching service</div>
+                        </div>
+
+                        <!-- Database Subnet Group Label -->
+                        <div style="margin-top: 20px; text-align: center;">
+                            <div style="background: #f3e5f5; border: 2px dashed #9c27b0; border-radius: 6px; padding: 10px; font-size: 11px; font-weight: bold; color: #9c27b0;">
+                                Database subnet group
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div class="security-section">
+            <div class="security-title">
+                🔐 Security Architecture & Best Practices
+            </div>
+            <div class="security-grid">
+                <div class="security-item">
+                    <h4>🌐 Edge Security</h4>
+                    <ul>
+                        <li><strong>AWS WAF:</strong> Web Application Firewall untuk filtering malicious traffic, SQL injection, XSS protection</li>
+                        <li><strong>AWS Shield Standard:</strong> DDoS protection otomatis gratis</li>
+                        <li><strong>CloudFront:</strong> HTTPS enforcement, custom SSL certificates via ACM</li>
+                        <li><strong>Route 53:</strong> DNSSEC untuk DNS security, health checks</li>
+                    </ul>
+                </div>
+
+                <div class="security-item">
+                    <h4>🏢 Network Security</h4>
+                    <ul>
+                        <li><strong>VPC Isolation:</strong> Private network dengan subnet segregation (public, web, app, database)</li>
+                        <li><strong>Security Groups:</strong> Stateful firewall di level instance, whitelist port & IP</li>
+                        <li><strong>Network ACLs:</strong> Stateless firewall di level subnet untuk additional layer</li>
+                        <li><strong>NAT Gateway:</strong> Outbound internet access untuk private subnets tanpa expose instance</li>
+                        <li><strong>VPC Flow Logs:</strong> Network traffic monitoring untuk audit & troubleshooting</li>
+                    </ul>
+                </div>
+
+                <div class="security-item">
+                    <h4>🔒 Data Encryption</h4>
+                    <ul>
+                        <li><strong>In Transit:</strong> TLS/SSL via ACM certificates untuk semua communication</li>
+                        <li><strong>At Rest:</strong> EBS volumes encrypted dengan AWS KMS, RDS encryption enabled</li>
+                        <li><strong>S3 Encryption:</strong> Server-Side Encryption (SSE-S3 atau SSE-KMS)</li>
+                        <li><strong>ElastiCache:</strong> Encryption in-transit dan at-rest dengan Redis AUTH</li>
+                    </ul>
+                </div>
+
+                <div class="security-item">
+                    <h4>👤 Identity & Access Management</h4>
+                    <ul>
+                        <li><strong>IAM Roles:</strong> EC2 instance roles dengan least privilege principle</li>
+                        <li><strong>IAM Policies:</strong> Fine-grained permissions untuk setiap resource</li>
+                        <li><strong>MFA:</strong> Multi-Factor Authentication untuk root dan admin accounts</li>
+                        <li><strong>CloudTrail:</strong> API call logging untuk audit compliance</li>
+                        <li><strong>AWS Config:</strong> Resource configuration tracking & compliance monitoring</li>
+                    </ul>
+                </div>
+
+                <div class="security-item">
+                    <h4>🗄️ Database Security</h4>
+                    <ul>
+                        <li><strong>Private Subnets:</strong> RDS hanya accessible dari application tier</li>
+                        <li><strong>Encryption:</strong> RDS encryption at rest dengan KMS keys</li>
+                        <li><strong>Automated Backups:</strong> Daily automated snapshots dengan encryption</li>
+                        <li><strong>Read Replicas:</strong> Di separate AZ untuk high availability</li>
+                        <li><strong>Database Activity Streams:</strong> Real-time monitoring untuk compliance</li>
+                    </ul>
+                </div>
+
+                <div class="security-item">
+                    <h4>📊 Monitoring & Logging</h4>
+                    <ul>
+                        <li><strong>CloudWatch:</strong> Metrics, logs, dan alarms untuk proactive monitoring</li>
+                        <li><strong>CloudWatch Logs:</strong> Centralized logging dari semua services</li>
+                        <li><strong>AWS X-Ray:</strong> Distributed tracing untuk performance debugging</li>
+                        <li><strong>GuardDuty:</strong> Threat detection service untuk malicious activity</li>
+                        <li><strong>Security Hub:</strong> Centralized security findings dari multiple services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Flow Section -->
+        <div class="flow-section">
+            <div class="flow-title">🔄 Request Flow & Data Journey</div>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-number">1</div>
+                    <div class="flow-step-name">User Request</div>
+                    <div class="flow-explanation">Pengguna mengirimkan permintaan melalui browser atau aplikasi, yang memulai alur dengan resolusi DNS. Fitur ini mencakup akses cepat ke konten statis atau dinamis tanpa penjelasan spesifik dari gambar, tetapi mendukung integrasi dengan layanan seperti CloudFront untuk distribusi global.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">2</div>
+                    <div class="flow-step-name">Route 53<br>DNS Resolution</div>
+                    <div class="flow-explanation">Route 53 menyelesaikan nama domain ke IP address, mengarahkan lalu lintas ke layanan yang tepat. Fitur ini mendukung routing lalu lintas berbasis latency, geo-location, dan health checks untuk ketersediaan tinggi, meskipun tidak secara langsung disebutkan di gambar.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">3</div>
+                    <div class="flow-step-name">WAF<br>Security Check</div>
+                    <div class="flow-explanation">AWS WAF memeriksa dan memfilter lalu lintas masuk untuk mencegah serangan seperti SQL injection atau XSS. Fitur ini memberikan perlindungan di tingkat edge, bekerja sama dengan CloudFront untuk keamanan awal sebelum mencapai backend.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">4</div>
+                    <div class="flow-step-name">CloudFront<br>CDN Cache</div>
+                    <div class="flow-explanation">Sesuai gambar, Amazon CloudFront (CDN) menggunakan edge caching untuk mendistribusikan konten PVA agar lebih cepat diakses dari lokasi terdekat user. Ini mengurangi latency, meningkatkan performance, dan membuat loading time lebih cepat dibandingkan dari data center utama. CDN managed dasar dengan 3 opsi, memungkinkan manajemen mandiri di area Indonesia untuk efisiensi biaya dan kecepatan.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">5</div>
+                    <div class="flow-step-name">ALB<br>Load Balance</div>
+                    <div class="flow-explanation">Application Load Balancer mendistribusikan lalu lintas ke instance EC2 yang sehat. Fitur ini mendukung path-based routing, HTTPS termination, dan integrasi dengan Auto Scaling untuk menangani lonjakan lalu lintas, melengkapi serverless options seperti Lambda dari gambar.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">6</div>
+                    <div class="flow-step-name">EC2 Web<br>Processing</div>
+                    <div class="flow-explanation">EC2 instances di web tier memproses permintaan front-end. Untuk alternatif serverless sesuai gambar, AWS Lambda (Serverless) menyediakan auto-scaling serverless backend yang autentikasi, grading, dan quick deploy on-demand. Ini hemat biaya dengan pay-per-execution, mendukung hingga 95% penghematan biaya dibandingkan server tradisional.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">7</div>
+                    <div class="flow-step-name">EC2 App<br>Business Logic</div>
+                    <div class="flow-explanation">EC2 instances di app tier menangani logika bisnis. Integrasi dengan Amazon Bedrock (AI) dari gambar memungkinkan foundation model Claude 2 Haiku, memberi kemampuan AI generatif seperti text generation, summarization, dan Q&A dengan biaya rendah sekitar $0.00025 per 1K token input/output.</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">8</div>
+                    <div class="flow-step-name">Cache/Database<br>Data Retrieval</div>
+                    <div class="flow-explanation">Data diambil dari cache atau database. Sesuai gambar, Amazon DynamoDB sebagai NoSQL database dengan single-digit millisecond latency, on-demand pricing hanya charge per request, auto scaling, built-in security, backup, caching untuk handle millions of requests. ElastiCache (Redis) untuk in-memory caching layer dengan response <1ms, memungkinkan caching data populer untuk mengurangi beban database. Integrasi S3 + CloudFront untuk storage statis compressed unik, biaya $0.023/GB per bulan untuk jutaan file.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

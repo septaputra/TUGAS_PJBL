@@ -1,0 +1,14 @@
+.fmw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.fmw-title h1{margin:0;font-size:1.6rem;font-weight:700}
+.fmw-subtitle{margin:0;color:#6b7280}
+.fmw-actions{display:flex;gap:.5rem;align-items:center}
+.fmw-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .9rem;border-radius:6px;color:#fff;text-decoration:none;font-weight:600}
+.fmw-btn-primary{background:#2563eb}
+.fmw-btn-success{background:#10b981}
+.fmw-btn-warning{background:#fb923c}
+
+.fmw-cards{display:flex;gap:1rem;margin-bottom:1.25rem}
+.fmw-card{flex:1;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));padding:1rem;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.06);display:flex;align-items:center;justify-content:space-between}
+.fmw-card-label{font-size:.9rem;font-weight:700;color:#374151}
+.fmw-card-value{font-size:1.25rem;font-weight:700;margin-top:.35rem;color:#111827}
+.fmw-card-icon{width:56px;height:56px;border-radius:10px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center}
