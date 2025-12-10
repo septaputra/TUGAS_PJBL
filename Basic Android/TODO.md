@@ -1,0 +1,6 @@
+- [x] Modify MainActivity.kt to add BasicForm composable with Column layout, Icon, OutlinedTextField for Nama and Alamat, Button SIMPAN, and Text for result.
+- [x] Add necessary imports for Compose components.
+- [x] Implement state management with remember mutableStateOf for nama, alamat, resultText.
+- [x] Handle button onClick to update resultText.
+- [x] Update setContent to call BasicForm instead of Greeting.
+- [x] Sync Gradle and test on emulator.
